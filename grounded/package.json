@@ -1,0 +1,17 @@
+{
+  "name": "grounded",
+  "version": "1.0.0",
+  "description": "Grounded - Fitness coaching platform",
+  "main": "index.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'Static site - no build needed'"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "@anthropic-ai/sdk": "^0.20.0"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}

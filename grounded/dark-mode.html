@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#1A1A1A">
+  <title>Grounded</title>
+  <style>
+    :root {
+      --yellow: #F4D35E;
+      --coral: #FF726F;
+      --dark-bg: #1A1A1A;
+      --card-bg: #2A2A2A;
+      --text-primary: #F5F5F5;
+      --text-secondary: #B0B0B0;
+      --border: #3A3A3A;
+      --light-border: #404040;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--dark-bg);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.5;
+      font-size: 16px;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 60px;
+    }
+
+    /* Header */
+    .header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1rem 0.75rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-title {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      color: var(--text-primary);
+    }
+
+    .header-subtitle {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* Deadline Hero */
+    .deadline-hero {
+      background: linear-gradient(135deg, var(--yellow) 0%, var(--coral) 100%);
+      padding: 1.5rem 1rem;
+      margin: 1rem;
+      border-radius: 12px;
+      color: white;
+      box-shadow: 0 4px 12px rgba(255, 114, 111, 0.3);
+    }
+
+    .deadline-text h2 {
+      font-family: Georgia, serif;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      line-height: 1.1;
+      color: white;
+    }
+
+    .deadline-text p {
+      font-size: 13px;
+      opacity: 0.95;
+      margin-bottom: 0.25rem;
+      color: white;
+    }
+
+    .deadline-ring {
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .ring {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .ring-value {
+      font-family: Georgia, serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .ring-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      color: white;
+    }
+
+    /* Tabs */
+    .tabs-container {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 60px;
+      z-index: 99;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 1rem;
+      border-bottom: 1px solid var(--border);
+      min-width: 100%;
+    }
+
+    .tab {
+      flex: 1;
+      min-width: 60px;
+      padding: 0.6rem 0.3rem;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .tab:active {
+      background: rgba(244, 211, 94, 0.1);
+    }
+
+    .tab.active {
+      color: var(--coral);
+      border-bottom-color: var(--coral);
+    }
+
+    /* Content */
+    .content {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-family: Georgia, serif;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+    }
+
+    .card-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+
+    /* Progress bar */
+    .progress-section {
+      margin-bottom: 1rem;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+    }
+
+    .progress-bar {
+      height: 5px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--yellow), var(--coral));
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+
+    /* Routine items */
+    .routine-item {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+
+    .routine-item:last-child {
+      border-bottom: none;
+    }
+
+    .routine-time {
+      font-family: Georgia, serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      min-width: 40px;
+      padding-top: 1px;
+    }
+
+    .routine-checkbox {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      flex-shrink: 0;
+      accent-color: var(--coral);
+    }
+
+    .routine-content {
+      flex: 1;
+    }
+
+    .routine-title {
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 0.2rem;
+      color: var(--text-primary);
+    }
+
+    .routine-subtitle {
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .routine-input {
+      margin-top: 0.6rem;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 12px;
+      width: 100%;
+      font-family: inherit;
+      background: var(--dark-bg);
+      color: var(--text-primary);
+    }
+
+    .routine-input::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.7;
+    }
+
+    /* Daily tracking */
+    .tracking-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0.6rem 0;
+    }
+
+    .tracking-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      flex-shrink: 0;
+      accent-color: var(--coral);
+    }
+
+    .tracking-label {
+      font-size: 13px;
+      cursor: pointer;
+      flex: 1;
+      color: var(--text-primary);
+    }
+
+    /* Forms */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .form-grid.two {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-bottom: 0.4rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text-primary);
+      background: var(--dark-bg);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.6;
+    }
+
+    .form-group textarea {
+      resize: none;
+      min-height: 70px;
+      line-height: 1.4;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 12px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      width: 100%;
+      margin-top: 0.75rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--yellow), var(--coral));
+      color: #000;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: var(--border);
+      color: var(--text-primary);
+      border: 1px solid var(--light-border);
+    }
+
+    .btn-secondary:active {
+      background: var(--light-border);
+    }
+
+    /* Coach section */
+    .coach-options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    .coach-option {
+      padding: 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--card-bg);
+      color: var(--text-primary);
+    }
+
+    .coach-option:active {
+      border-color: var(--coral);
+      background: rgba(255, 114, 111, 0.1);
+    }
+
+    .chat-history {
+      background: var(--dark-bg);
+      border-radius: 8px;
+      padding: 0.75rem;
+      height: 280px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-bottom: 0.75rem;
+      font-size: 12px;
+      line-height: 1.5;
+      border: 1px solid var(--border);
+    }
+
+    .chat-message {
+      margin-bottom: 0.75rem;
+      padding: 0.5rem 0;
+    }
+
+    .chat-message.user {
+      font-weight: 600;
+      color: var(--coral);
+    }
+
+    .chat-message.coach {
+      color: var(--text-primary);
+    }
+
+    .chat-input-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .chat-input-group input {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+      background: var(--dark-bg);
+      color: var(--text-primary);
+    }
+
+    .chat-input-group input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .chat-input-group button {
+      padding: 10px 12px;
+      background: var(--coral);
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+      min-width: 50px;
+    }
+
+    /* Workout section */
+    .workout-block {
+      background: var(--dark-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+    }
+
+    .workout-item {
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .workout-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .workout-number {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      background: var(--coral);
+      color: #000;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 22px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .workout-name {
+      font-weight: 600;
+      font-size: 12px;
+      margin-bottom: 0.2rem;
+      color: var(--text-primary);
+    }
+
+    .workout-details {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    /* Focus display */
+    .focus-display {
+      margin-top: 0.6rem;
+      padding: 10px;
+      background: var(--dark-bg);
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-style: italic;
+      border: 1px solid var(--border);
+    }
+
+    /* Goal box */
+    .goal-box {
+      background: var(--dark-bg);
+      padding: 0.9rem;
+      border-radius: 8px;
+      border-left: 3px solid var(--coral);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--coral);
+      margin-bottom: 1rem;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .goal-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .goal-item {
+      color: var(--text-secondary);
+      margin: 0.3rem 0;
+    }
+
+    /* Weight summary */
+    .weight-summary {
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: var(--dark-bg);
+      border-radius: 6px;
+      display: none;
+      font-size: 11px;
+      border: 1px solid var(--border);
+    }
+
+    .weight-summary div {
+      color: var(--text-secondary);
+      margin: 0.3rem 0;
+    }
+
+    .weight-summary strong {
+      color: var(--coral);
+      font-weight: 600;
+    }
+
+    /* Safe area for notch */
+    @supports (padding: max(0px)) {
+      body {
+        padding-bottom: calc(60px + max(0px, env(safe-area-inset-bottom)));
+      }
+    }
+
+    /* Landscape */
+    @media (max-height: 500px) {
+      .header {
+        padding: 0.75rem 1rem 0.5rem;
+      }
+
+      .deadline-hero {
+        padding: 1rem;
+        margin: 0.75rem;
+      }
+
+      .deadline-text h2 {
+        font-size: 22px;
+      }
+
+      .content {
+        padding: 0.75rem;
+      }
+
+      .card {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="header-title">Grounded</div>
+    <div class="header-subtitle">Building Foundational Habits</div>
+  </div>
+
+  <!-- Deadline Hero -->
+  <div class="deadline-hero">
+    <div class="deadline-text">
+      <h2 id="days-left">115 days</h2>
+      <p>Until November 6</p>
+      <p style="font-size: 12px; margin-top: 0.5rem;">
+        <strong id="weight-to-lose">4 lbs</strong> to lose
+      </p>
+    </div>
+    <div class="deadline-ring">
+      <div class="ring">
+        <div class="ring-value" id="on-pace">80%</div>
+        <div class="ring-label">On Pace</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-container">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(event, 'morning')">Morning</button>
+      <button class="tab" onclick="switchTab(event, 'evening')">Evening</button>
+      <button class="tab" onclick="switchTab(event, 'workouts')">Workouts</button>
+      <button class="tab" onclick="switchTab(event, 'sunday')">Sunday</button>
+      <button class="tab" onclick="switchTab(event, 'coach')">Coach</button>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <!-- Morning Tab -->
+    <div class="page active" id="morning">
+      <div class="card">
+        <span class="card-label">Rise & Thrive (7:00 to 8:00)</span>
+        <div class="progress-section">
+          <div class="progress-header">
+            <span>Done: <span id="morning-count">0</span>/5</span>
+            <span id="morning-percent">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="morning-progress" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="routine-item">
+          <div class="routine-time">7:00</div>
+          <input type="checkbox" class="routine-checkbox" onchange="updateMorningProgress()">
+          <div class="routine-content">
+            <div class="routine-title">Rise</div>
+            <div class="routine-subtitle">Wash face, brush teeth + skincare, get dressed</div>
+          </div>
+        </div>
+
+        <div class="routine-item">
+          <div class="routine-time">7:10</div>
+          <input type="checkbox" class="routine-checkbox" onchange="updateMorningProgress()">
+          <div class="routine-content">
+            <div class="routine-title">Recharge</div>
+            <div class="routine-subtitle">10 min stretch: neck, hips, full body</div>
+          </div>
+        </div>
+
+        <div class="routine-item">
+          <div class="routine-time">7:20</div>
+          <input type="checkbox" class="routine-checkbox" onchange="updateMorningProgress()">
+          <div class="routine-content">
+            <div class="routine-title">Reflect</div>
+            <div class="routine-subtitle">Coffee in hand, 10 min: prayer, devotional, stillness</div>
+          </div>
+        </div>
+
+        <div class="routine-item">
+          <div class="routine-time">7:30</div>
+          <input type="checkbox" class="routine-checkbox" onchange="updateMorningProgress()">
+          <div class="routine-content">
+            <div class="routine-title">Reclaim</div>
+            <div class="routine-subtitle">25 min: your deep work focus</div>
+            <div class="focus-display" id="focus-display">Check your evening prep...</div>
+          </div>
+        </div>
+
+        <div class="routine-item">
+          <div class="routine-time">7:55</div>
+          <input type="checkbox" class="routine-checkbox" onchange="updateMorningProgress()">
+          <div class="routine-content">
+            <div class="routine-title">Ready</div>
+            <div class="routine-subtitle">Check top 3 priorities, log on</div>
+          </div>
+        </div>
+
+        <button class="btn btn-secondary" onclick="resetMorning()">Reset Morning</button>
+      </div>
+    </div>
+
+    <!-- Evening Tab -->
+    <div class="page" id="evening">
+      <div class="card">
+        <span class="card-label">Restore & Rest (10:00 to 11:00)</span>
+        <div class="progress-section">
+          <div class="progress-header">
+            <span>Done: <span id="evening-count">0</span>/4</span>
+            <span id="evening-percent">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="evening-progress" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="routine-item">
+          <div class="routine-time">10:00</div>
+          <input type="checkbox" class="routine-checkbox" onchange="updateEveningProgress()">
+          <div class="routine-content">
+            <div class="routine-title">Reflect</div>
+            <div class="routine-subtitle">Lay out clothes, check calendar, write top 3</div>
+            <input type="text" class="routine-input" id="tomorrow-focus" placeholder="Tomorrow's deep work focus..." onchange="updateFocusDisplay()">
+          </div>
+        </div>
+
+        <div class="routine-item">
+          <div class="routine-time">10:15</div>
+          <input type="checkbox" class="routine-checkbox" onchange="updateEveningProgress()">
+          <div class="routine-content">
+            <div class="routine-title">Restore</div>
+            <div class="routine-subtitle">Skincare + brush teeth</div>
+          </div>
+        </div>
+
+        <div class="routine-item">
+          <div class="routine-time">10:20</div>
+          <input type="checkbox" class="routine-checkbox" onchange="updateEveningProgress()">
+          <div class="routine-content">
+            <div class="routine-title">Read</div>
+            <div class="routine-subtitle">30 to 40 min</div>
+          </div>
+        </div>
+
+        <div class="routine-item">
+          <div class="routine-time">11:00</div>
+          <input type="checkbox" class="routine-checkbox" onchange="updateEveningProgress()">
+          <div class="routine-content">
+            <div class="routine-title">Rest</div>
+            <div class="routine-subtitle">Lights out, phone on charger</div>
+          </div>
+        </div>
+
+        <button class="btn btn-secondary" onclick="resetEvening()">Reset Evening</button>
+      </div>
+
+      <!-- Daily Tracking -->
+      <div class="card">
+        <span class="card-label">Daily Tracking</span>
+        <div>
+          <div class="card-label" style="margin-top: 0;">Workouts & Walking</div>
+          <div class="tracking-item">
+            <input type="checkbox" id="workout-a" onchange="saveDailyLog()">
+            <label class="tracking-label" for="workout-a">Workout A</label>
+          </div>
+          <div class="tracking-item">
+            <input type="checkbox" id="workout-b" onchange="saveDailyLog()">
+            <label class="tracking-label" for="workout-b">Workout B</label>
+          </div>
+          <div class="tracking-item">
+            <input type="checkbox" id="workout-c" onchange="saveDailyLog()">
+            <label class="tracking-label" for="workout-c">Workout C</label>
+          </div>
+          <div class="tracking-item">
+            <input type="checkbox" id="zumba" onchange="saveDailyLog()">
+            <label class="tracking-label" for="zumba">Zumba</label>
+          </div>
+          <div class="tracking-item">
+            <input type="checkbox" id="walking" onchange="saveDailyLog()">
+            <label class="tracking-label" for="walking">Walking</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workouts Tab -->
+    <div class="page" id="workouts">
+      <div class="card">
+        <span class="card-label">Your Goal</span>
+        <div class="goal-box">
+          <div class="goal-title">Weight: 250 lbs → 230 lbs</div>
+          <div class="goal-item">Deadline: November 6</div>
+          <div class="goal-item">Weekly: 3 workouts (A, B, C) + 4 walks</div>
+          <div class="goal-item">Daily water: 1.5L (5 days/week)</div>
+          <div class="goal-item">Daily steps: 5k (4 days/week)</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-label">Strength Program</span>
+        <div style="font-size: 11px; line-height: 1.7; color: var(--text-secondary);">
+          <div><strong>Duration:</strong> ~60 min per session</div>
+          <div><strong>RPE:</strong> Weeks 1–2: RPE 7–8. Week 3+: RPE 8–9.</div>
+          <div><strong>Flexibility:</strong> Any order, any day.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-label">Workout A: Upper</span>
+        <div class="workout-block">
+          <div class="workout-item">
+            <div class="workout-number">1</div>
+            <div class="workout-name">Dumbbell bench press</div>
+            <div class="workout-details">4 sets x 8–10 reps, 90 sec rest</div>
+          </div>
+          <div class="workout-item">
+            <div class="workout-number">2</div>
+            <div class="workout-name">Dumbbell shoulder press</div>
+            <div class="workout-details">3 sets x 8–10 reps, 90 sec rest</div>
+          </div>
+          <div class="workout-item">
+            <div class="workout-number">3</div>
+            <div class="workout-name">Lateral raise</div>
+            <div class="workout-details">3 sets x 10–12 reps, 60 sec rest</div>
+          </div>
+          <div class="workout-item">
+            <div class="workout-number">4</div>
+            <div class="workout-name">Tricep dips or machine dips</div>
+            <div class="workout-details">2 sets x 8–10 reps, 60 sec rest</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-label">Workout B: Lower</span>
+        <div class="workout-block">
+          <div class="workout-item">
+            <div class="workout-number">1</div>
+            <div class="workout-name">Leg press</div>
+            <div class="workout-details">4 sets x 8–10 reps, 2 min rest</div>
+          </div>
+          <div class="workout-item">
+            <div class="workout-number">2</div>
+            <div class="workout-name">Leg extension (machine)</div>
+            <div class="workout-details">3 sets x 10–12 reps, 90 sec rest</div>
+          </div>
+          <div class="workout-item">
+            <div class="workout-number">3</div>
+            <div class="workout-name">Leg curl (machine)</div>
+            <div class="workout-details">3 sets x 10–12 reps, 90 sec rest</div>
+          </div>
+          <div class="workout-item">
+            <div class="workout-number">4</div>
+            <div class="workout-name">Calf raises</div>
+            <div class="workout-details">3 sets x 12–15 reps, 60 sec rest</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-label">Workout C: Upper (Back & Lats)</span>
+        <div class="workout-block">
+          <div class="workout-item">
+            <div class="workout-number">1</div>
+            <div class="workout-name">Lat pulldown (wide grip)</div>
+            <div class="workout-details">4 sets x 8–10 reps, 90 sec / PULL-UP PROGRESSION</div>
+          </div>
+          <div class="workout-item">
+            <div class="workout-number">2</div>
+            <div class="workout-name">Seated row</div>
+            <div class="workout-details">4 sets x 8–10 reps, 90 sec rest</div>
+          </div>
+          <div class="workout-item">
+            <div class="workout-number">3</div>
+            <div class="workout-name">Assisted pull-ups or resistance bands</div>
+            <div class="workout-details">3 sets x 6–8 reps, 2 min rest</div>
+          </div>
+          <div class="workout-item">
+            <div class="workout-number">4</div>
+            <div class="workout-name">Bicep curls</div>
+            <div class="workout-details">3 sets x 10–12 reps, 60 sec rest</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sunday Tab -->
+    <div class="page" id="sunday">
+      <div class="card">
+        <span class="card-label">Weekly Check-in</span>
+        <div class="form-grid two">
+          <div class="form-group">
+            <label>Week #</label>
+            <input type="number" id="week-num" min="1" max="26" placeholder="1">
+          </div>
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="week-date">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-label">Body Metrics</span>
+        <div class="form-grid two">
+          <div class="form-group">
+            <label>Weight (lbs)</label>
+            <input type="number" step="0.1" id="weight" placeholder="250" onchange="calculateWeightLoss()">
+          </div>
+          <div class="form-group">
+            <label>Waist (in)</label>
+            <input type="number" step="0.25" id="waist" placeholder="">
+          </div>
+        </div>
+        <div class="form-grid two">
+          <div class="form-group">
+            <label>Hips (in)</label>
+            <input type="number" step="0.25" id="hips" placeholder="">
+          </div>
+          <div class="form-group">
+            <label>Arms (in)</label>
+            <input type="number" step="0.25" id="arms" placeholder="">
+          </div>
+        </div>
+        <div class="weight-summary" id="weight-summary">
+          <div>Loss vs last week: <strong id="loss-week">—</strong></div>
+          <div>Total lost: <strong id="loss-total">—</strong></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-label">The Sunday 3</span>
+        <div class="form-group" style="margin-bottom: 0.75rem;">
+          <label>Win</label>
+          <textarea id="sunday-win" placeholder="Something to celebrate..."></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom: 0.75rem;">
+          <label>Challenge</label>
+          <textarea id="sunday-challenge" placeholder="Being honest about..."></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom: 0.75rem;">
+          <label>Lesson</label>
+          <textarea id="sunday-lesson" placeholder="Taking into next week..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="saveSundayCheckIn()">Save Check-in</button>
+      </div>
+    </div>
+
+    <!-- Coach Tab -->
+    <div class="page" id="coach">
+      <div id="coach-choice">
+        <div class="card">
+          <span class="card-label">Coach</span>
+          <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 1rem;">What would you like?</div>
+          <div class="coach-options">
+            <div class="coach-option" onclick="analyzeWeek()">Analyze this week</div>
+            <div class="coach-option" onclick="justChat()">Just chat with Coach</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="coach-chat" style="display: none;">
+        <div class="card">
+          <span class="card-label">Coach</span>
+          <div class="chat-history" id="chat-history"></div>
+          <div class="chat-input-group">
+            <input type="text" id="chat-input" placeholder="Ask Coach...">
+            <button onclick="sendChat()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(e, tabName) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(tabName).classList.add('active');
+      e.target.classList.add('active');
+    }
+
+    function updateMorningProgress() {
+      const checkboxes = document.querySelectorAll('#morning .routine-checkbox');
+      const checked = [...checkboxes].filter(c => c.checked).length;
+      const percent = Math.round(checked / 5 * 100);
+      document.getElementById('morning-count').textContent = checked;
+      document.getElementById('morning-percent').textContent = percent + '%';
+      document.getElementById('morning-progress').style.width = percent + '%';
+    }
+
+    function resetMorning() {
+      document.querySelectorAll('#morning .routine-checkbox').forEach(c => c.checked = false);
+      updateMorningProgress();
+    }
+
+    function updateEveningProgress() {
+      const checkboxes = document.querySelectorAll('#evening .routine-checkbox');
+      const checked = [...checkboxes].filter(c => c.checked).length;
+      const percent = Math.round(checked / 4 * 100);
+      document.getElementById('evening-count').textContent = checked;
+      document.getElementById('evening-percent').textContent = percent + '%';
+      document.getElementById('evening-progress').style.width = percent + '%';
+    }
+
+    function resetEvening() {
+      document.querySelectorAll('#evening .routine-checkbox').forEach(c => c.checked = false);
+      updateEveningProgress();
+    }
+
+    function updateFocusDisplay() {
+      const focus = document.getElementById('tomorrow-focus').value;
+      document.getElementById('focus-display').textContent = focus || 'Check your evening prep...';
+    }
+
+    function saveDailyLog() {
+      const data = {
+        workoutA: document.getElementById('workout-a').checked,
+        workoutB: document.getElementById('workout-b').checked,
+        workoutC: document.getElementById('workout-c').checked,
+        zumba: document.getElementById('zumba').checked,
+        walking: document.getElementById('walking').checked,
+        date: new Date().toISOString().split('T')[0]
+      };
+      localStorage.setItem('daily_' + data.date, JSON.stringify(data));
+    }
+
+    function calculateWeightLoss() {
+      const weight = parseFloat(document.getElementById('weight').value);
+      if (!weight) {
+        document.getElementById('weight-summary').style.display = 'none';
+        return;
+      }
+      document.getElementById('weight-summary').style.display = 'block';
+      const loss = 250 - weight;
+      document.getElementById('loss-total').textContent = (loss >= 0 ? '-' : '+') + Math.abs(loss).toFixed(1) + ' lbs';
+    }
+
+    function saveSundayCheckIn() {
+      const data = {
+        weekNum: document.getElementById('week-num').value,
+        weekDate: document.getElementById('week-date').value,
+        weight: document.getElementById('weight').value,
+        waist: document.getElementById('waist').value,
+        hips: document.getElementById('hips').value,
+        arms: document.getElementById('arms').value,
+        win: document.getElementById('sunday-win').value,
+        challenge: document.getElementById('sunday-challenge').value,
+        lesson: document.getElementById('sunday-lesson').value
+      };
+      localStorage.setItem('sunday_' + (document.getElementById('week-num').value || 'latest'), JSON.stringify(data));
+      alert('Check-in saved!');
+    }
+
+    function analyzeWeek() {
+      document.getElementById('coach-choice').style.display = 'none';
+      document.getElementById('coach-chat').style.display = 'block';
+      document.getElementById('chat-history').innerHTML = '<div style="color: var(--text-secondary); text-align: center;">Coach is analyzing your week...</div>';
+      setTimeout(() => {
+        addChatMessage('coach', 'Great week! You\'ve been consistent. Keep the momentum—you\'re on track for Nov 6. How are you feeling?');
+      }, 1000);
+    }
+
+    function justChat() {
+      document.getElementById('coach-choice').style.display = 'none';
+      document.getElementById('coach-chat').style.display = 'block';
+      document.getElementById('chat-history').innerHTML = '<div style="color: var(--text-secondary);">Coach is ready. Ask away.</div>';
+    }
+
+    function sendChat() {
+      const input = document.getElementById('chat-input');
+      const msg = input.value;
+      if (!msg) return;
+      addChatMessage('user', msg);
+      input.value = '';
+      setTimeout(() => {
+        addChatMessage('coach', 'That\'s a great question. Let\'s work through it. Remember, consistency beats intensity.');
+      }, 500);
+    }
+
+    function addChatMessage(role, text) {
+      const history = document.getElementById('chat-history');
+      const msg = document.createElement('div');
+      msg.className = 'chat-message ' + role;
+      msg.textContent = (role === 'user' ? 'You: ' : 'Coach: ') + text;
+      history.appendChild(msg);
+      history.scrollTop = history.scrollHeight;
+    }
+
+    document.getElementById('week-date').valueAsDate = new Date();
+  </script>
+</body>
+</html>
