@@ -83,6 +83,23 @@
     .scorecard-value { font-weight: 600; }
     .status-good { color: var(--yellow); }
     .status-bad { color: var(--coral); }
+    .dashboard { padding: 0 1rem; margin-bottom: 1rem; }
+    .dashboard-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; }
+    .dashboard-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); margin-bottom: 1rem; font-weight: 600; }
+    .dashboard-item { margin-bottom: 1rem; }
+    .dashboard-item:last-child { margin-bottom: 0.75rem; }
+    .dashboard-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 0.4rem; }
+    .dashboard-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.4rem; }
+    .dashboard-fill { height: 100%; background: linear-gradient(90deg, var(--yellow), var(--coral)); transition: width 0.3s; }
+    .dashboard-stat { font-size: 11px; color: var(--text-secondary); text-align: right; margin-top: 0.2rem; }
+    .dashboard-status { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--yellow); }
+    .confirmation-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 2rem 1.5rem; text-align: center; z-index: 1000; max-width: 280px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: none; }
+    .confirmation-popup.active { display: block; }
+    .confirmation-popup h3 { font-family: Georgia, serif; font-size: 20px; margin-bottom: 0.5rem; color: var(--coral); }
+    .confirmation-popup .quote { font-size: 13px; color: var(--text-secondary); font-style: italic; margin: 1rem 0; line-height: 1.6; }
+    .confirmation-popup .close-btn { margin-top: 1.5rem; padding: 10px 20px; background: var(--coral); color: #000; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; }
+    .overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
+    .overlay.active { display: block; }
     @supports (padding: max(0px)) {
       body { padding-bottom: calc(60px + max(0px, env(safe-area-inset-bottom))); }
     }
@@ -107,6 +124,27 @@
         <div class="ring-value" id="on-pace">—</div>
         <div class="ring-label">On Pace</div>
       </div>
+    </div>
+  </div>
+
+  <div class="dashboard">
+    <div class="dashboard-card">
+      <div class="dashboard-title">This Week's Progress</div>
+      <div class="dashboard-item">
+        <div class="dashboard-label">Workouts</div>
+        <div class="dashboard-bar">
+          <div class="dashboard-fill" id="workout-fill" style="width: 0%"></div>
+        </div>
+        <div class="dashboard-stat" id="workout-stat">0 / 3</div>
+      </div>
+      <div class="dashboard-item">
+        <div class="dashboard-label">Walking</div>
+        <div class="dashboard-bar">
+          <div class="dashboard-fill" id="walking-fill" style="width: 0%"></div>
+        </div>
+        <div class="dashboard-stat" id="walking-stat">0 / 4</div>
+      </div>
+      <div class="dashboard-status" id="dashboard-status">Loading...</div>
     </div>
   </div>
 
@@ -174,7 +212,8 @@
             <div class="routine-subtitle">Check top 3 priorities, log on</div>
           </div>
         </div>
-        <button class="btn btn-secondary" onclick="resetMorning()">Reset Morning</button>
+        <button class="btn btn-primary" onclick="submitMorning()">Submit Morning</button>
+        <button class="btn btn-secondary" onclick="resetMorning()">Reset</button>
       </div>
     </div>
 
@@ -223,7 +262,8 @@
             <div class="routine-subtitle">Lights out, phone on charger</div>
           </div>
         </div>
-        <button class="btn btn-secondary" onclick="resetEvening()">Reset Evening</button>
+
+        <button class="btn btn-primary" onclick="submitEvening()">Submit Evening</button>
       </div>
 
       <div class="card">
@@ -249,6 +289,7 @@
           <input type="checkbox" id="walking" onchange="saveDailyLog()">
           <label class="tracking-label" for="walking">Walking</label>
         </div>
+        <button class="btn btn-secondary" onclick="resetEvening()" style="margin-top: 1rem;">Reset Evening</button>
       </div>
     </div>
 
@@ -500,6 +541,94 @@
     }
 
     document.getElementById('week-date').valueAsDate = new Date();
+
+    // Quotes for morning and evening
+    const morningQuotes = [
+      "The early bird gets the worm.",
+      "Every morning is a fresh start.",
+      "You've got this today.",
+      "Progress over perfection.",
+      "Today is yours to claim.",
+      "Small steps lead to big changes.",
+      "Be the energy you want to attract.",
+      "Your potential is limitless.",
+      "Start strong, finish stronger.",
+      "This is your moment."
+    ];
+
+    const eveningQuotes = [
+      "You showed up today. That's what matters.",
+      "Rest is productive.",
+      "Tomorrow is a blank page.",
+      "You did your best. That's enough.",
+      "Sleep well, you've earned it.",
+      "Today's done. Let it go.",
+      "Refill your cup tonight.",
+      "Growth happens in rest too.",
+      "You're building something meaningful.",
+      "Peace is the greatest reward."
+    ];
+
+    function getRandomQuote(array) {
+      return array[Math.floor(Math.random() * array.length)];
+    }
+
+    function showConfirmation(title, quote) {
+      document.getElementById('popup-title').textContent = title;
+      document.getElementById('popup-quote').textContent = '"' + quote + '"';
+      document.getElementById('confirmation-popup').classList.add('active');
+      document.getElementById('overlay').classList.add('active');
+    }
+
+    function closeConfirmation() {
+      document.getElementById('confirmation-popup').classList.remove('active');
+      document.getElementById('overlay').classList.remove('active');
+      updateDashboard();
+    }
+
+    async function submitMorning() {
+      await saveDailyLog();
+      const quote = getRandomQuote(morningQuotes);
+      showConfirmation('✓ Morning Logged!', quote);
+    }
+
+    async function submitEvening() {
+      await saveDailyLog();
+      const quote = getRandomQuote(eveningQuotes);
+      showConfirmation('✓ Evening Logged!', quote);
+    }
+
+    async function updateDashboard() {
+      try {
+        const response = await fetch(`${API_BASE}/weekly-summary`, { headers: getHeaders() });
+        const summary = await response.json();
+        
+        const workoutPercent = Math.round((summary.workouts.total / 3) * 100);
+        const walkingPercent = Math.round((summary.walking.days / 4) * 100);
+        
+        document.getElementById('workout-fill').style.width = workoutPercent + '%';
+        document.getElementById('walking-fill').style.width = walkingPercent + '%';
+        document.getElementById('workout-stat').textContent = summary.workouts.total + ' / 3';
+        document.getElementById('walking-stat').textContent = summary.walking.days + ' / 4';
+        
+        let statusText = 'On track ✓';
+        if (!summary.workouts.onPace || !summary.walking.onPace) {
+          statusText = 'Need 1 more to hit goal';
+        }
+        document.getElementById('dashboard-status').textContent = statusText;
+      } catch (error) { console.error('Error updating dashboard:', error); }
+    }
+
+    // Update dashboard on page load
+    updateDashboard();
   </script>
+
+  <div class="overlay" id="overlay"></div>
+  <div class="confirmation-popup" id="confirmation-popup">
+    <h3 id="popup-title">✓ Logged!</h3>
+    <p style="font-size: 12px; color: var(--text-primary);">This has been saved.</p>
+    <div class="quote" id="popup-quote"></div>
+    <button class="close-btn" onclick="closeConfirmation()">Got it</button>
+  </div>
 </body>
 </html>
