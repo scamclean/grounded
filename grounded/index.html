@@ -583,7 +583,7 @@
     function closeConfirmation() {
       document.getElementById('confirmation-popup').classList.remove('active');
       document.getElementById('overlay').classList.remove('active');
-      updateDashboard();
+     // updateDashboard();
     }
 
     async function submitMorning() {
@@ -619,8 +619,6 @@
       } catch (error) { console.error('Error updating dashboard:', error); }
     }
 
-    // Update dashboard on page load
-    updateDashboard();
   </script>
 
   <div class="overlay" id="overlay"></div>
